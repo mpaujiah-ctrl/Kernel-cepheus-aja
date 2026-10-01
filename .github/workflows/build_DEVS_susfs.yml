@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repo sendiri
         uses: actions/checkout@v4
 
-      - name: Clone kernel source (raystef66)
+      - name: Clone kernel source (DEVS)
         run: |
           git clone --depth=1 -b "${{ env.KERNEL_BRANCH }}" "${{ env.KERNEL_SOURCE }}" kernel
 
