@@ -215,11 +215,12 @@ jobs:
           void dt_to_yaml(FILE *outf, struct dt_info *dti) {}
           CEOF
 
-      - name: Keluarkan sa8155 dkk
+      - name: Ganti file logika dtc dengan versi dari 16.0-cepheus (dtc 17.0-cepheus gagal parse plugin/overlay &label{})
         working-directory: kernel
         run: |
-          sed -i -E 's/(sa8155|sa8195|sdmshrike)[^ \\]*\.dtbo?//g' arch/arm64/boot/dts/qcom/Makefile
-          git diff arch/arm64/boot/dts/qcom/Makefile
+          git clone --depth=1 -b 16.0 https://github.com/crdroidandroid/android_kernel_xiaomi_sm8150 /tmp/crd
+          rm -rf scripts/dtc
+          cp -r /tmp/crd/scripts/dtc scripts/dtc
       
       - name: Build kernel
         working-directory: kernel
