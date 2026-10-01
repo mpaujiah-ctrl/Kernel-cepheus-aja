@@ -130,7 +130,7 @@ jobs:
               exit 1
             fi
             cp "$PATCH_FILE" ./
-            patch -p1 --fuzz=0 < "$(basename "$PATCH_FILE")" 2>&1 | tee ../susfs_patch_log.txt
+            patch -p1 < "$(basename "$PATCH_FILE")" 2>&1 | tee ../susfs_patch_log.txt
             echo "[+] SUSFS patch selesai diproses - cek susfs_patch_log.txt & .rej kalau ada hunk gagal."
           fi
 
@@ -175,6 +175,13 @@ jobs:
             echo "::warning::Ada $COUNT hunk yang gagal di-apply, cek artifact rej-files"
           fi
 
+      - name: Update localversion
+        working-directory: kernel
+        run: |
+          DEFCONFIG="arch/${{ env.KERNEL_ARCH }}/configs/${{ env.BASE_DEFCONFIG }}"
+          sed -i 's/CONFIG_LOCALVERSION=".*"/CONFIG_LOCALVERSION="-cepheus-SukiSU"/' "$DEFCONFIG"
+          grep "CONFIG_LOCALVERSION" "$DEFCONFIG"
+      
       - name: Merge defconfig (base + fragment cepheus + fragment KSU/SUSFS)
         working-directory: kernel
         run: |
@@ -187,13 +194,6 @@ jobs:
           echo "=== Cek hasil merge ==="
           grep "CONFIG_KSU\|CONFIG_MACH_XIAOMI_CEPHEUS\|CONFIG_ARM64=y\|CONFIG_NR_CPUS" out/.config
       
-      - name: Update localversion
-        working-directory: kernel
-        run: |
-          DEFCONFIG="arch/${{ env.KERNEL_ARCH }}/configs/${{ env.BASE_DEFCONFIG }}"
-          sed -i 's/CONFIG_LOCALVERSION=".*"/CONFIG_LOCALVERSION="-cepheus-SukiSU"/' "$DEFCONFIG"
-          grep "CONFIG_LOCALVERSION" "$DEFCONFIG"
-
       - name: Install toolchain
         run: |
           sudo apt update
@@ -236,6 +236,7 @@ jobs:
       - name: Build kernel
         working-directory: kernel
         run: |
+          grep -E "^CONFIG_LTO|CONFIG_MACH_XIAOMI_CEPHEUS|CONFIG_KSU=" out/.config
           export ARCH=arm64
           export LLVM=1
           export CC=clang
@@ -246,8 +247,7 @@ jobs:
           export OBJDUMP=llvm-objdump
           export STRIP=llvm-strip
           export CROSS_COMPILE=aarch64-linux-gnu-
-
-          make O=out ARCH=arm64 "${{ env.BASE_DEFCONFIG }}"
+         
           make ARCH=arm64 O=out CC=clang AR=llvm-ar LD=ld.lld \
                NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
                -j"$(nproc --all)" Image.gz-dtb
@@ -259,7 +259,7 @@ jobs:
         if: failure()
         run: |
           cd kernel
-          grep -rn "elus_afe" techpack include | head -20
+          grep -rn "elus_afe" --include=*.c --include=*.h . | head -20 || true
           grep -n -i "elliptic" techpack/audio/dsp/Makefile techpack/audio/asoc/Makefile techpack/audio/Makefile 2>/dev/null
           grep -i "ELLIPTIC\|ULTRASOUND" out/.config
       
