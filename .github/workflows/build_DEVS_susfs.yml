@@ -214,13 +214,16 @@ jobs:
 
           void dt_to_yaml(FILE *outf, struct dt_info *dti) {}
           CEOF
-
+           
       - name: Ganti file logika dtc dengan versi dari 16.0-cepheus (dtc 17.0-cepheus gagal parse plugin/overlay &label{})
         working-directory: kernel
         run: |
-          git clone --depth=1 -b 16.0 https://github.com/crdroidandroid/android_kernel_xiaomi_sm8150 /tmp/crd
-          rm -rf scripts/dtc
-          cp -r /tmp/crd/scripts/dtc scripts/dtc
+          rm -rf /tmp/dtc16
+          git clone --depth=1 -b 16.0-cepheus "https://github.com/JoK3rLeE/android_kernel_xiaomi_sm8150" /tmp/dtc16
+          for f in checks.c dtc-lexer.l dtc-lexer.lex.c_shipped dtc-parser.tab.c_shipped dtc-parser.y dtc.c dtc.h flattree.c livetree.c srcpos.c srcpos.h util.h; do
+            cp "/tmp/dtc16/scripts/dtc/$f" "scripts/dtc/$f"
+          done
+          rm -rf /tmp/dtc16
       
       - name: Build kernel
         working-directory: kernel
