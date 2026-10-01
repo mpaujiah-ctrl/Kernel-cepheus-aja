@@ -218,7 +218,9 @@ jobs:
       - name: Keluarkan sa8155 dkk
         working-directory: kernel
         run: |
-          sed -i '/sa8155\|sa8195\|sdmshrike/d' arch/arm64/boot/dts/qcom/Makefile
+          git checkout arch/arm64/boot/dts/qcom/Makefile
+          sed -i -E 's/(sa8155|sa8195|sdmshrike)[^ \\]*\.dtbo?//g' arch/arm64/boot/dts/qcom/Makefile
+          git diff arch/arm64/boot/dts/qcom/Makefile
       
       - name: Build kernel
         working-directory: kernel
