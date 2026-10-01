@@ -181,9 +181,9 @@ jobs:
           export ARCH=arm64
           mkdir -p out
           scripts/kconfig/merge_config.sh -O out \
-            "${{ env.BASE_DEFCONFIG }}" \
-            "${{ env.DEVICE_FRAGMENT1 }}" \
-            "${{ env.DEVICE_FRAGMENT2 }}"
+            "arch/${{ env.KERNEL_ARCH }}/configs/${{ env.BASE_DEFCONFIG }}" \
+            "arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEVICE_FRAGMENT1 }}" \
+            "arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEVICE_FRAGMENT2 }}"
           echo "=== Cek hasil merge ==="
           grep "CONFIG_KSU\|CONFIG_MACH_XIAOMI_CEPHEUS\|CONFIG_ARM64=y\|CONFIG_NR_CPUS" out/.config
       
