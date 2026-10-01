@@ -10,7 +10,7 @@ env:
   DEVICE_FRAGMENT1: "vendor/xiaomi/cepheus.config"
   DEVICE_FRAGMENT2: "vendor/xiaomi/sm8150-common.config"
   KERNEL_ARCH: "arm64"
-  KPM_ENABLE: "true"
+  KPM_ENABLE: "false"
 
 jobs:
   build:
@@ -193,6 +193,14 @@ jobs:
             "arch/${{ env.KERNEL_ARCH }}/configs/${{ env.DEVICE_FRAGMENT2 }}"
           echo "=== Cek hasil merge ==="
           grep "CONFIG_KSU\|CONFIG_MACH_XIAOMI_CEPHEUS\|CONFIG_ARM64=y\|CONFIG_NR_CPUS" out/.config
+      
+      - name: Debug config KSU
+        if: always()
+        working-directory: kernel
+        run: |
+          grep -n "kernelsu" drivers/Kconfig || true
+          grep -n "depends on\|select\|^config" drivers/kernelsu/Kconfig | head -30 || true
+          grep -E "OVERLAY_FS|KPROBES" out/.config || true
       
       - name: Install toolchain
         run: |
