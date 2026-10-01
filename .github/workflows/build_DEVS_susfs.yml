@@ -255,13 +255,13 @@ jobs:
           ls out/arch/arm64/boot/Image.gz-dtb
           ls out/arch/arm64/boot/Image
 
-      - name: Debug elus_afe
-        if: failure()
+      - name: Verifikasi SukiSU
+        if: always()
+        working-directory: kernel
         run: |
-          cd kernel
-          grep -rn "elus_afe" --include=*.c --include=*.h . | head -20 || true
-          grep -n -i "elliptic" techpack/audio/dsp/Makefile techpack/audio/asoc/Makefile techpack/audio/Makefile 2>/dev/null
-          grep -i "ELLIPTIC\|ULTRASOUND" out/.config
+          grep -E "^CONFIG_KSU|^CONFIG_KPROBES|^CONFIG_KPM" out/.config || true
+          find out/drivers/kernelsu -name '*.o' | head -5
+          grep -n "ksu" kernel/reboot.c fs/exec.c fs/open.c fs/stat.c kernel/sys.c drivers/input/input.c || true
       
       - name: Pack AnyKernel3
         run: |
