@@ -255,6 +255,14 @@ jobs:
           ls out/arch/arm64/boot/Image.gz-dtb
           ls out/arch/arm64/boot/Image
 
+      - name: Debug elus_afe
+        if: failure()
+        run: |
+          cd kernel
+          grep -rn "elus_afe" techpack include | head -20
+          grep -n -i "elliptic" techpack/audio/dsp/Makefile techpack/audio/asoc/Makefile techpack/audio/Makefile 2>/dev/null
+          grep -i "ELLIPTIC\|ULTRASOUND" out/.config
+      
       - name: Pack AnyKernel3
         run: |
           cp kernel/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
