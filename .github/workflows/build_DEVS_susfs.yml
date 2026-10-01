@@ -215,6 +215,11 @@ jobs:
           void dt_to_yaml(FILE *outf, struct dt_info *dti) {}
           CEOF
 
+      - name: Keluarkan sa8155 dkk
+        working-directory: kernel
+        run: |
+          sed -i '/sa8155\|sa8195\|sdmshrike/d' arch/arm64/boot/dts/qcom/Makefile
+      
       - name: Build kernel
         working-directory: kernel
         run: |
