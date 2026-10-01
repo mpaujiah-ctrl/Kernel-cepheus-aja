@@ -6,9 +6,9 @@ on:
 env:
   KERNEL_SOURCE: "https://github.com/mpaujiah-ctrl/android_kernel_xiaomi_sm8150_DEVS"
   KERNEL_BRANCH: "lineage-23.2"
-  BASE_DEFCONFIG: "arch/arm64/configs/vendor/sm8150-perf_defconfig"
-  DEVICE_FRAGMENT1: "arch/arm64/configs/vendor/xiaomi/cepheus.config"
-  DEVICE_FRAGMENT2: "arch/arm64/configs/vendor/xiaomi/sm8150-common.config"
+  BASE_DEFCONFIG: "vendor/sm8150-perf_defconfig"
+  DEVICE_FRAGMENT1: "vendor/xiaomi/cepheus.config"
+  DEVICE_FRAGMENT2: "vendor/xiaomi/sm8150-common.config"
   KERNEL_ARCH: "arm64"
   KPM_ENABLE: "true"
 
