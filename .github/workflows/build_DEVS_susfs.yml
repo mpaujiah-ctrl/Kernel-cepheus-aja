@@ -82,6 +82,9 @@ jobs:
           grep -q "^CONFIG_KSU=y" "$DEFCONFIG" || echo "CONFIG_KSU=y" >> "$DEFCONFIG"
           grep -q "^CONFIG_KALLSYMS=y" "$DEFCONFIG" || echo "CONFIG_KALLSYMS=y" >> "$DEFCONFIG"
           grep -q "^CONFIG_KALLSYMS_ALL=y" "$DEFCONFIG" || echo "CONFIG_KALLSYMS_ALL=y" >> "$DEFCONFIG"
+          for CFG in CONFIG_KPROBES CONFIG_HAVE_KPROBES CONFIG_KPROBE_EVENTS; do
+          grep -q "^${CFG}=y" "$DEFCONFIG" || echo "${CFG}=y" >> "$DEFCONFIG"
+          done
           grep "CONFIG_K" "$DEFCONFIG"
 
       - name: Clean reboot.c syntax and fix KSU
@@ -272,7 +275,7 @@ jobs:
         if: always()
         working-directory: kernel
         run: |
-          grep -E "^CONFIG_KSU|^CONFIG_KPROBES|^CONFIG_KPM" out/.config || true
+          grep -E "^CONFIG_KSU|^CONFIG_KPROBES|^CONFIG_EXT4_FS|^CONFIG_KPM" out/.config || true
           find out/drivers/kernelsu -name '*.o' | head -5
           grep -n "ksu" kernel/reboot.c fs/exec.c fs/open.c fs/stat.c kernel/sys.c drivers/input/input.c || true
       
