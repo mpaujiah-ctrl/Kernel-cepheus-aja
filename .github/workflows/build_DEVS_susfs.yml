@@ -49,6 +49,12 @@ jobs:
           ls -la drivers/kernelsu
           grep -i "kernelsu" drivers/Makefile drivers/Kconfig
 
+      - name: Compat 4.14 - MODULE_IMPORT_NS
+        working-directory: kernel
+        run: |
+           sed -i 's|^\(\s*\)MODULE_IMPORT_NS(|\1// MODULE_IMPORT_NS(|' drivers/kernelsu/core/init.c
+           grep -n "MODULE_IMPORT_NS" drivers/kernelsu/core/init.c
+      
       - name: Patch kernel_umount.c missing set handler (bug upstream)
         working-directory: kernel
         run: |
@@ -197,13 +203,13 @@ jobs:
           echo "=== Cek hasil merge ==="
           grep "CONFIG_KSU\|CONFIG_MACH_XIAOMI_CEPHEUS\|CONFIG_ARM64=y\|CONFIG_NR_CPUS" out/.config
       
-      - name: Debug config KSU
-        if: always()
+      - name: Debug syscall hook
+        if: failure()
         working-directory: kernel
         run: |
-          grep -n "kernelsu" drivers/Kconfig || true
-          grep -n "depends on\|select\|^config" drivers/kernelsu/Kconfig | head -30 || true
-          grep -E "OVERLAY_FS|KPROBES" out/.config || true
+          ls drivers/kernelsu drivers/kernelsu/hook
+          grep -rn "syscall_fn_t\|ksu_syscall_table_hook\|ksu_syscall_hook" drivers/kernelsu | head -30 || true
+          sed -n 1,45p drivers/kernelsu/hook/syscall_hook.h
       
       - name: Install toolchain
         run: |
