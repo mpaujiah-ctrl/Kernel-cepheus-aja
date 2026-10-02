@@ -203,13 +203,6 @@ jobs:
           echo "=== Cek hasil merge ==="
           grep "CONFIG_KSU\|CONFIG_MACH_XIAOMI_CEPHEUS\|CONFIG_ARM64=y\|CONFIG_NR_CPUS" out/.config
       
-      - name: Debug syscall hook
-        if: failure()
-        working-directory: kernel
-        run: |
-          ls drivers/kernelsu drivers/kernelsu/hook
-          grep -rn "syscall_fn_t\|ksu_syscall_table_hook\|ksu_syscall_hook" drivers/kernelsu | head -30 || true
-          sed -n 1,45p drivers/kernelsu/hook/syscall_hook.h
       
       - name: Install toolchain
         run: |
@@ -277,6 +270,28 @@ jobs:
           ls out/arch/arm64/boot/Image.gz-dtb
           ls out/arch/arm64/boot/Image
 
+      - name: Debug syscall hook
+        if: failure()
+        working-directory: kernel
+        run: |
+          ls drivers/kernelsu drivers/kernelsu/hook
+          grep -rn "syscall_fn_t\|ksu_syscall_table_hook\|ksu_syscall_hook" drivers/kernelsu | head -30 || true
+          sed -n 1,45p drivers/kernelsu/hook/syscall_hook.h
+      
+      - name: Debug syscall hook
+        if: failure()
+        working-directory: kernel
+        run: |
+          ls drivers/kernelsu drivers/kernelsu/hook || true
+          echo "=== KCONFIG ==="
+          cat drivers/kernelsu/Kconfig || true
+          echo "=== MAKEFILE ==="
+          cat drivers/kernelsu/Makefile || true
+          echo "=== HEADER ==="
+          cat drivers/kernelsu/hook/syscall_hook.h || true
+          echo "=== PEMAKAI ==="
+          grep -rn "syscall_fn_t\|ksu_syscall_table_hook\|ksu_syscall_table" drivers/kernelsu | head -40 || true
+      
       - name: Verifikasi SukiSU
         if: always()
         working-directory: kernel
